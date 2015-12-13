@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;cxx;c;def</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h</Extensions>
+    </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>moc;h;cpp</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Debug">
+      <UniqueIdentifier>{c865c785-9f89-4e81-9042-ab3ede420102}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Release">
+      <UniqueIdentifier>{682b3679-5dbe-42e1-9621-61534ad270a9}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Source Files\SkeletonLib">
+      <UniqueIdentifier>{2abb4e6e-5ba6-4f08-9b0a-8b71e784ce73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SkeletonLib">
+      <UniqueIdentifier>{81209db1-af00-4372-9a1e-3e4301bd1ebd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="skeletondemogui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_skeletondemogui.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_skeletondemogui.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\qrc_skeletondemogui.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonLib\BSTrans.cpp">
+      <Filter>Source Files\SkeletonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonLib\Geometry.cpp">
+      <Filter>Source Files\SkeletonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonLib\SpanTree.cpp">
+      <Filter>Source Files\SkeletonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonLib\StructureSkel.cpp">
+      <Filter>Source Files\SkeletonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonLib\StructureTD.cpp">
+      <Filter>Source Files\SkeletonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonLib\TreeAVL.cpp">
+      <Filter>Source Files\SkeletonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonLib\TriDel.cpp">
+      <Filter>Source Files\SkeletonLib</Filter>
+    </ClCompile>
+    <ClCompile Include="mypainter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_mypainter.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_mypainter.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonLib\ContourTracer.cpp">
+      <Filter>Source Files\SkeletonLib</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="skeletondemogui.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="skeletondemogui.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="skeletondemogui.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="mypainter.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GeneratedFiles\ui_skeletondemogui.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonLib\BSTrans.h">
+      <Filter>Header Files\SkeletonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonLib\Geometry.h">
+      <Filter>Header Files\SkeletonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonLib\LinkedList.h">
+      <Filter>Header Files\SkeletonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonLib\SpanTree.h">
+      <Filter>Header Files\SkeletonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonLib\StructureSkel.h">
+      <Filter>Header Files\SkeletonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonLib\StructureTD.h">
+      <Filter>Header Files\SkeletonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonLib\TreeAVL.h">
+      <Filter>Header Files\SkeletonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonLib\TriDel.h">
+      <Filter>Header Files\SkeletonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonLib\BitRaster.h">
+      <Filter>Header Files\SkeletonLib</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonLib\ContourTracer.h">
+      <Filter>Header Files\SkeletonLib</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
