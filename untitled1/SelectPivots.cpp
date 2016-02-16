@@ -107,9 +107,14 @@ void SelectPivots::setVertex(const QPoint &pos, bool cond){
                             Point(pos.x(), pos.y()))
                             );
         curpos = QPoint(tmp.X, tmp.Y);
-        pivots.push_back(curpos);
+        //pivots.push_back(curpos);
         SkeletProcess p(skeleton);
-        pivNodes.push_back(p.setPivot(curpos.x(), curpos.y(), minBone));
+        //pivNodes.push_back(p.setPivot(curpos.x(), curpos.y(), minBone));
+        TNode *verti = p.setPivot(curpos.x(), curpos.y(), minBone);
+        if (verti){
+            pivNodes.push_back(verti);
+            pivots.push_back(curpos);
+        }
     } else {
         if (!pivots.empty()){
             pivots.pop_back();

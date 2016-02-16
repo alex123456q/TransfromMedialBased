@@ -11,6 +11,9 @@
 //#include "ui_PaintFig.h"
 
 
+void PaintFig::setImage(QImage* im){
+    mainImage = im;
+}
 
 PaintFig::PaintFig(QWidget *parent)
     : MyWidget(parent)
@@ -22,8 +25,8 @@ PaintFig::PaintFig(QWidget *parent)
   PaintFig::setMouseTracking(true);
   mainImage = new QImage(500, 300, 32);
   mainImage->fill(qRgb(255, 255, 255));
-  QPixmap pixmap(300,500);
-  pixmap.fill(QColor("transparent"));
+  //QPixmap pixmap(300,500);
+  //pixmap.fill(QColor("transparent"));
   setVisible(false);
 }
 //PaintFig::PaintFig(QWidget *parent) :

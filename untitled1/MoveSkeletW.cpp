@@ -6,6 +6,9 @@
 #include<cmath>
 
 
+/*
+ * Initialization
+ */
 MoveSkeletW::MoveSkeletW(QWidget *parent, QImage im, TPolFigure *sk, std::vector<TNode *> vert)
     : MyWidget(parent)
 {
@@ -25,6 +28,11 @@ MoveSkeletW::MoveSkeletW(QWidget *parent, QImage im, TPolFigure *sk, std::vector
 MoveSkeletW::~MoveSkeletW()
 {
 }
+
+
+/*
+ * Matrix for rotating
+ */
 //std::vector<std::vector<double>>
 double** createMatr(double oldX, double oldY, double newX, double newY, double rotX, double rotY){
     //std::vector<std::vector<double>> rotMatr;
@@ -59,6 +67,10 @@ double** createMatr(double oldX, double oldY, double newX, double newY, double r
     return rotMatr;
 }
 
+
+/*
+ * Multplication vector and matrix
+ */
 double* mult(double* vect, double** matr){
     double* res = new double[3];
     for (int i = 0; i < 3; ++i){
@@ -69,6 +81,9 @@ double* mult(double* vect, double** matr){
     return res;
 }
 
+/*
+ * Creating vector for rotating and founding new vector
+ */
 void rotBone(double** rotMatr, TNode* curNode){
 //    std::cout << (curNode->Depth);
     double* vect = new double[3];
@@ -79,6 +94,10 @@ void rotBone(double** rotMatr, TNode* curNode){
     curNode->Disc->X = vect[0];
     curNode->Disc->Y = vect[1];
 }
+
+/*
+ * dfs for all bones from choosed bone
+ */
 void MoveSkeletW::dfs(TNode* curNode){
     if (curNode == NULL)
         return;
@@ -96,25 +115,65 @@ void MoveSkeletW::dfs(TNode* curNode){
     }
 }
 
-void MoveSkeletW::changeSkelet(double** rotMatr, TNode* curNode, double x, double y){
+/*
+ * Choose the base bone for rotating and dfs
+ */
+
+/*double DistEdge(Point *r1, Point *r2, Point *rp)
+{
+    double result = 0.0;
+    double u1 = 0.0, V1 = 0.0, u2 = 0.0, V2 = 0.0, u3 = 0.0, v3 = 0.0, r = 0.0, X = 0.0, Y = 0.0;
+    u1 = (r1->X - rp->X);
+    V1 = (r1->Y - rp->Y);
+    u2 = (r2->X - rp->X);
+    V2 = (r2->Y - rp->Y);
+    X = (rp->X);
+    Y = (rp->Y);
+    if (Tangent(r1, r2, X, Y))
+    {
+        r = u1 * V2 - u2 * V1;
+        r = r * r;
+        u3 = u1 - u2;
+        v3 = V1 - V2;
+        r = r / (u3 * u3 + v3 * v3);
+        r = sqrt(r);
+    }
+    else
+        r = MAXDOUBLE;
+    result = r;
+    return result;
+} */
+
+
+void MoveSkeletW::changeSkelet(TNode* curNode, double x, double y){
     TBone* Bone = curNode->Bones[0];
     double min = 1000000;
     int mini = 0;
     double tmp0;
     for (int i = 0; i < curNode->Kind(); ++i){
         Bone = curNode->Bones[i];
-        tmp0= DistEdge(
+        Point pt_to = get_perpendicular_pt_from_pt_to_line(
+                    Point(Bone->org->Disc->X,
+                    Bone->org->Disc->Y),
+                    Point(Bone->dest->Disc->X,
+                    Bone->dest->Disc->Y),
+                    Point(x, y));
+
+        //if codirect
+        tmp0 = pow(pt_to.X - x, 2) + pow(pt_to.Y - y, 2);
+                /*DistEdge(
                         &Point(Bone->org->Disc->X,
                         Bone->org->Disc->Y),
                         &Point(Bone->dest->Disc->X,
                         Bone->dest->Disc->Y),
-                        &Point(x, y));
-        //std::cout<<tmp0<<" ";
+                        &Point(x, y));*/
+        std::cout<<tmp0<<" ";
         if (min > tmp0){
             min = tmp0;
             mini = i;
         }
     }
+    std::cout << "min distance " << min << " for i=" << mini <<std::endl;
     curRot.push_back(curNode);
     dfs(curNode->Bones[mini]->GetNextNode(curNode));
 }
@@ -188,7 +247,7 @@ void MoveSkeletW::mouseMoveEvent(QMouseEvent *event){
 
 
     if (curRot.empty()){
-        changeSkelet(rotMatr, curNode, event->pos().x(), event->pos().y());
+        changeSkelet(curNode, event->pos().x(), event->pos().y());
         Circles();
     }
 

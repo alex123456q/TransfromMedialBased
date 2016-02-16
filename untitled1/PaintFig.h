@@ -13,7 +13,9 @@ class PaintFig : public MyWidget//QPaintFig
 {
     Q_OBJECT
 public:
+    void setImage(QImage* im);
     PaintFig(QWidget *parent = 0);
+//    PaintFig(QWidget *parent, QImage);
 //    QImage getImage();
     ~PaintFig();
 protected:

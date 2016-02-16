@@ -17,6 +17,7 @@ class MyWidget : public QWidget
 public:
     MyWidget(QWidget *parent = 0):QWidget(parent){}
     TPolFigure *skeleton;
+    virtual void setImage(QImage* im){};
 //    std::vector<TNode*> pivNodes;
     //virtual QImage getImage() = 0;
     virtual std::vector<TNode*> getPivots(){std::cout<<"in my widget ";return std::vector<TNode*>();};

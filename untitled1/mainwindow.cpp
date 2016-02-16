@@ -227,7 +227,7 @@ void MainWindow::openImageButtonClicked()
     fileDialog->setFileMode(QFileDialog::ExistingFile);
     fileDialog->setNameFilter("Images (*.png *.jpg *.bmp)");
     QStringList fileNames;
-    string imagepath;
+    QString imagepath;
     //QString str = QFileDialog::getOpenFileName(0, "Open Dialog", "", "*.cpp *.h");
     if (fileDialog->exec()) {
             fileNames = fileDialog->selectedFiles();
@@ -250,8 +250,28 @@ void MainWindow::openImageButtonClicked()
                 filename.push_back(filepath[i]);
             }
 
+        curWidget->setImage(new QImage(imagepath));
         }
+
+       /*mainImage = curWidget->getImage();
+        //SelectPivots* Widget = new SelectPivots(this, mainImage);
+        disconnect(ui->savePolyButton, SIGNAL(clicked()), curWidget, SLOT(savePolygons()));
+
+
+        TPolFigure *sk = curWidget->skeleton;
+        curWidget->setVisible(false);
+        delete curWidget;
+        curWidget = new SelectPivots(this, mainImage, sk);
+        curWidget->setVisible(true);
+        connect(ui->savePolyButton, SIGNAL(clicked()), curWidget, SLOT(savePolygons()));
+
+
+        curWidget = new PaintFig(this);
+        curWidget->setVisible(true);*/
+
+
 //    emit(newImageLoaded(imagepath));
-//    curWidget->setImage(QImage(imagepath));
+   // curWidget->setImage(QImage(imagepath));
+    //mainImage = new QImage(imagepath);
 }
 

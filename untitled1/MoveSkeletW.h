@@ -32,7 +32,7 @@ private:
 
     void Circles();
     void dfs(TNode* curNode);
-    void changeSkelet(double** rotMatr, TNode* curNode, double x, double y);
+    void changeSkelet(TNode* curNode, double x, double y);
 };
 
 
