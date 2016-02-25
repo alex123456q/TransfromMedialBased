@@ -25,6 +25,11 @@ private:
     bool point;
     int xPr, yPr;
     TNode* curNode;
+    TNode* endPoint;
+    TNode* endPointst;
+    TPoint* start;
+    TPoint* finish;
+    TPoint* tmpCorn;
     std::vector<Point> circPoint;
     std::vector<TNode* > curRot;
     std::vector<TNode *> vertices;

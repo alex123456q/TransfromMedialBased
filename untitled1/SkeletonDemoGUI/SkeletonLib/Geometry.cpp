@@ -15,18 +15,18 @@ PlanePosition Classify(Point *P1, Point *P2, Point *q)
 	bx = q->X - P1->X;
 	by = q->Y - P1->Y;
 	S = ax * by - ay * bx; /* векторное произведение */
-	if (S > 0)
+    if (S > 0.0000001)
 		result = LEFT_POS;
 	else
-		if (S < 0)
+        if (S < -0.0000001)
 			result = RIGHT_POS;
 		else
 		{
 			C = ax * bx + ay * by; /* скалярное произведение */
-			if (C < 0)
+            if (C < -0.0000001)
 				result = Behind;
 			else
-				if (C == 0)
+                if (C == 0)
 					result = Origin;
 				else
 				{
@@ -48,9 +48,9 @@ PlanePosition Classify(Point *P1, Point *P2, Point *q)
 bool Codirect(Point *r0, Point *r1, Point *r2)
 /*монотонность трех собственных точек*/
 {
-	bool result = false;
-	result = ((r2->X - r1->X) * (r1->X - r0->X) + (r2->Y - r1->Y) * (r1->Y - r0->Y) > 0);
-	return result;
+    int result = false;
+    result = ((r2->X - r1->X) * (r1->X - r0->X) + (r2->Y - r1->Y) * (r1->Y - r0->Y) > 0);
+    return result;
 }
 
 
