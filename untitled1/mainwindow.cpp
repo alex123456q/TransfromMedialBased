@@ -43,8 +43,8 @@ MainWindow::MainWindow(QWidget *parent) :
 //    hbox->setMargin(6);
 //    hbox->setSpacing(6);
 //            addWidget(curWidget);
-    connect(ui->skeletImageButton, SIGNAL(clicked()), this, SLOT(SkeletButtonClicked()));
-    connect(ui->pivotsButton, SIGNAL(clicked()), this, SLOT(PivotsButtonClicked()));
+    //connect(ui->skeletImageButton, SIGNAL(clicked()), this, SLOT(SkeletButtonClicked()));
+    //connect(ui->pivotsButton, SIGNAL(clicked()), this, SLOT(PivotsButtonClicked()));
     connect(ui->okButton, SIGNAL(clicked()), this, SLOT(OkButtonClicked()));
     connect(ui->moveButton, SIGNAL(clicked()), this, SLOT(MovingButtonClicked()));
     connect(ui->saveImageButton, SIGNAL(clicked()), this, SLOT(saveImageButtonClicked()));
@@ -124,71 +124,19 @@ MainWindow::~MainWindow()
 //        ;//Run();
 //}
 
-void MainWindow::SkeletButtonClicked(){
-    std::cout << "End of insert and now we are process" << endl;
-    mainImage = curWidget->getImage();
-    //disconnect(ui->skeletImageButton, SIGNAL(clicked()), this, SLOT(SkeletButtonClicked()));
-    curWidget->setVisible(false);
-    delete curWidget;
-    curWidget = new MyPainter(this, mainImage);
-//    skeletWidget->imageChanged(mainImage);
-//    setCentralWidget(skeletWidget);
-    disconnect(ui->savePolyButton, SIGNAL(clicked()), this, SLOT(errorMessage()));
-    connect(ui->savePolyButton, SIGNAL(clicked()), curWidget, SLOT(savePolygons()));
 
-    curWidget->setVisible(true);
-//    skeletWidget->setVisible(false);
-//    Widget->setVisible(false);
-//    delete skeletWidget;
-
-//    if(currentWidget) {
-//        disconnect(currentWidget, SIGNAL(changeCurrentWidget(int,bool)), this, SLOT(setMainWidgetSlot(int,bool)));
-//    }
-
-//    // Получаем виджет по айди
-//    currentWidget = getWidgetById(idWidget);
-//    currentWidget->setVisible(true);
-
-    // Делаем виджет центральным для этого окна
-//    setCentralWidget(skeletWidget);
-
-//    connect(currentWidget, SIGNAL(changeCurrentWidget(int,bool)), SLOT(setMainWidgetSlot(int,bool)));
-
-
-//    Running::print(polygons);
-    //    if( proc_image.data ) {
-    //       // mainImage->load_image( proc_image );
-    //        mainImage->update ();
-    //        proc_image.release();
-    //    }
-
-}
-void MainWindow::PivotsButtonClicked(){
-    std::cout << "Second" << endl;
-    mainImage = curWidget->getImage();
-    //SelectPivots* Widget = new SelectPivots(this, mainImage);
-    disconnect(ui->savePolyButton, SIGNAL(clicked()), curWidget, SLOT(savePolygons()));
-
-    TPolFigure *sk = curWidget->skeleton;
-    curWidget->setVisible(false);
-    delete curWidget;
-    curWidget = new SelectPivots(this, mainImage, sk);
-    curWidget->setVisible(true);
-    connect(ui->savePolyButton, SIGNAL(clicked()), curWidget, SLOT(savePolygons()));
-}
 void MainWindow::OkButtonClicked(){
     QApplication::quit();
 }
 
-
 void MainWindow::MovingButtonClicked(){
-    mainImage = curWidget->getImage();
 
-    TPolFigure *sk = curWidget->skeleton;
+    mainImage = curWidget->getImage();    
+    // = curWidget->skeleton;
     curWidget->setVisible(false);
-    std::vector<TNode*> p = curWidget->getPivots(); //
+    //std::vector<TNode*> p = curWidget->getPivots(); //
     delete curWidget;
-    curWidget = new MoveSkeletW(this, mainImage, sk, p);
+    curWidget = new MoveSkeletW(this, mainImage);
     //curWidget->pivots = p; //
     curWidget->setVisible(true);
 }

@@ -16,11 +16,10 @@ class MyWidget : public QWidget
     Q_OBJECT
 public:
     MyWidget(QWidget *parent = 0):QWidget(parent){}
-    TPolFigure *skeleton;
-    virtual void setImage(QImage* im){};
+   // TPolFigure *skeleton;
+    virtual void setImage(QImage*){}
 //    std::vector<TNode*> pivNodes;
     //virtual QImage getImage() = 0;
-    virtual std::vector<TNode*> getPivots(){std::cout<<"in my widget ";return std::vector<TNode*>();};
     QImage getImage(){
         QImage img(this->size(), QImage::Format_ARGB32);
         QPainter painter(&img);

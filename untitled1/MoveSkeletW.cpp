@@ -8,9 +8,34 @@
 /*
  * Initialization
  */
-MoveSkeletW::MoveSkeletW(QWidget *parent, QImage im, TPolFigure *sk, std::vector<TNode *> vert)
+void MoveSkeletW::renewSkelet(){
+    BitRaster* srcimg = new BitRaster(image.width(), image.height());
+    bool inverted = false;
+    for (int i = 0; i < image.height(); i++) {
+        for(int j = 0; j < image.width(); j++) {
+            bool isBlack = (qBlue(image.pixel(j, i)) < 128
+                            || qRed(image.pixel(j, i)) < 128
+                            || qGreen(image.pixel(j, i)) < 128);
+            if (!inverted) {
+                if (isBlack) {
+                    srcimg->setBit(j, i, isBlack);
+                }
+            }
+            else {
+                if (!isBlack) {
+                    srcimg->setBit(j, i, !isBlack);
+                }
+            }
+        }
+    }
+
+    BondSkeletTrans(srcimg, 0, 100, skeleton);
+}
+
+MoveSkeletW::MoveSkeletW(QWidget *parent, QImage im)
     : MyWidget(parent)
 {
+    skeleton = NULL;
     MoveSkeletW::setMouseTracking(false);
     setMinimumSize(500, 300);
     resize(500, 300);
@@ -18,9 +43,11 @@ MoveSkeletW::MoveSkeletW(QWidget *parent, QImage im, TPolFigure *sk, std::vector
     setVisible(false);
     point = true;
     image = im;
-    skeleton = sk;
-    vertices = vert;
+    tmpCorn = NULL;
+    renewSkelet();
+
     endPoint = NULL;
+    curNode = NULL;
     xPr = 0;
     yPr = 0;
 }
@@ -106,39 +133,7 @@ void rotEdge(double** rotMatr, TPoint* curPoint){
 }
 
 /*
-TContour* S = skeleton->Boundary->first();
-
-while (S != NULL) {
-    int cornersCount = S->ListPoints->cardinal();
-    TPoint** points = new TPoint*[cornersCount];
-    int i = 0;
-    TPoint* Corn = S->ListPoints->first();
-    while (Corn != NULL)
-    {
-        points[i++] = Corn;
-        Corn = Corn->getNext();
-    }
-    for (int j = 0; j < cornersCount - 1; j++) {
-        painter.drawLine(points[j]->X, points[j]->Y, points[j + 1]->X, points[j + 1]->Y);
-    }
-    painter.drawLine(points[cornersCount - 1]->X, points[cornersCount - 1]->Y, points[0]->X, points[0]->Y);
-
-    delete points;
-    S = S->getNext();
-}
-
-Classify(Point *P1, Point *P2, Point *q) == between;
-
-*/
-
-
-
-
-
-
-
-/*
- * dfs for all bones from choosed bone
+ * dfs for all bones from chosen bone
  */
 void MoveSkeletW::dfs(TNode* curNode){
     if (curNode == NULL)
@@ -236,7 +231,32 @@ yc:=yc1-round(50*sin(fi*pi/180));
  */
 
 
-void MoveSkeletW::Circles(){
+double det (double a, double b, double c, double d) {
+    return a * d - b * c;
+}
+
+struct line {
+    double a, b, c;
+};
+
+bool intersect (QPoint p1, QPoint q1, QPoint p2, QPoint q2, QPoint& res) {
+    line m, n;
+    m.a = p1.x()- q1.y();
+    m.b = q1.x() - p1.x();
+    m.c = -m.a*p1.x() - m.b*p1.y();
+    n.a = p2.y() - q2.y();
+    n.b = q2.x() - p2.x();
+    n.c = -m.a*p2.x() - m.b*p2.y();
+    double zn = det (m.a, m.b, n.a, n.b);
+    if (fabs (zn) < 0.000001)
+        return false;
+    res = QPoint(- det (m.c, m.b, n.c, n.b) / zn, - det (m.a, m.c, n.a, n.c) / zn);
+    //if (res.x() < 0 || res.y() < 0)
+    //    return false;
+    return true;
+}
+
+void MoveSkeletW::Circles(double x, double y){
     std::vector<TSite*> a;
     for (int i = 0; i < 3; ++i)
         for (int j = 0; j < 3; ++j)
@@ -280,6 +300,10 @@ void MoveSkeletW::Circles(){
 //            newVert->moveAsNextFor(newEdge);
         }
     }
+
+
+   // interPoint =
+
     TContour* S = skeleton->Boundary->first();
     TPoint* Corn;
 
@@ -287,7 +311,28 @@ void MoveSkeletW::Circles(){
         /*TPoint* */ Corn = S->ListPoints->first();
         while (Corn != NULL)
         {
+
+            /* if (Classify(Corn->getNextLooped(), Corn, &interPoint) == Between
+               || Classify(Corn->getNextLooped(), Corn, &interPoint) == Origin){
+                 std::cout << "here it is" << std::endl;
+                 break;
+             }*/
             //find intersection of lines
+           /* QPoint res;
+            if (intersect(QPoint(curNode->Disc->X,curNode->Disc->Y), QPoint(x, y),
+                          QPoint(Corn->X, Corn->Y), QPoint(Corn->getNextLooped()->X, Corn->getNextLooped()->Y),res)
+                &&
+                    Codirect(new Point(curNode->Disc->X,curNode->Disc->Y),new Point(x, y),
+                             new Point(res.x() , res.y()))
+
+                    /*Classify(new Point(curNode->Disc->X,curNode->Disc->Y),
+                          new Point(x, y), new Point(res.x(), res.y())) != Behind*/
+                   /* ){
+                endPoint = new QPoint(res);
+                endPointst = new QPoint(x, y);
+                std::cout << "here it is" << std::endl;
+                break;
+            }*/
             if (Codirect (new Point(endPointst->Disc->X, endPointst->Disc->Y),
                           new Point(endPoint->Disc->X, endPoint->Disc->Y), Corn) //){
             || Corn->X == endPoint->Disc->X && Corn->Y == endPoint->Disc->Y){
@@ -358,7 +403,7 @@ void MoveSkeletW::mouseMoveEvent(QMouseEvent *event){
 
     if (curRot.empty()){
         changeSkelet(curNode, event->pos().x(), event->pos().y());
-        Circles();
+        Circles(event->pos().x(), event->pos().y());
     }
 
     double angle = asin(rotMatr[0][1]);
@@ -390,11 +435,62 @@ void MoveSkeletW::mouseReleaseEvent(QMouseEvent *event){
     }
 }
 
+Point get_perpendicular_pt_from_pt_to_line(
+       Point& pta,
+       Point& ptb,
+       Point& pt_from){
+    Point pt_to;
+    double b1 = pt_from.X * (pta.X - ptb.X) + pt_from.Y * (pta.Y - ptb.Y);
+    double b2 = pta.X * ptb.Y - pta.Y * ptb.X;
+    pt_to.Y = (pta.X - ptb.X) * (pta.X - ptb.X) + (pta.Y - ptb.Y) * (pta.Y - ptb.Y);
+    double det_k = b1 * (pta.X - ptb.X) - b2 * (pta.Y - ptb.Y);
+
+    pt_to.X = det_k/pt_to.Y;
+    det_k = (pta.X - ptb.X) * b2 + (pta.Y - ptb.Y) * b1;
+    pt_to.Y = det_k/pt_to.Y;
+    return pt_to;
+}
 
 void MoveSkeletW::selectPivot(int x, int y){
-    int mini = 0;
-    int min = 1000000;
+    //int mini = 0;
+    //int min = 1000000;
+    QPoint pos(x, y);
+    QPoint curpos;
+    TConnected* Com = skeleton->Components->first();
+    TBone *minBone = NULL;
+    double min = 10000000000;
+    double tmp0;
+    while (Com != NULL) {
+        TBone* Bone = Com->Bones->first();
+         while (Bone != NULL) {
+            tmp0= DistEdge(
+                    &Point(Bone->org->Disc->X,
+                    Bone->org->Disc->Y),
+                    &Point(Bone->dest->Disc->X,
+                    Bone->dest->Disc->Y),
+                    &Point(pos.x(), pos.y()));
+            if (min > tmp0){
+                min = tmp0;
+                minBone = Bone;
+            }
+            Bone = Bone->getNext();
+        }
+        Com = Com->getNext();
+   }
+    Point tmp  = (get_perpendicular_pt_from_pt_to_line(
+                        Point(minBone->org->Disc->X,
+                        minBone->org->Disc->Y),
+                        Point(minBone->dest->Disc->X,
+                        minBone->dest->Disc->Y),
+                        Point(pos.x(), pos.y()))
+                        );
+    curpos = QPoint(tmp.X, tmp.Y);
+    //pivots.push_back(curpos);
+    SkeletProcess p(skeleton);
+    //pivNodes.push_back(p.setPivot(curpos.x(), curpos.y(), minBone));
+    curNode = p.setPivot(curpos.x(), curpos.y(), minBone);
 
+  /*
 //    std::cout<<"SELECTING of: "<<vertices.size();
     for (int i = 0; i < vertices.size(); ++i){
 //        std::cout<<vertices[i]->Disc->X <<"-"<<vertices[i]->Disc->Y<<"="<<x<<"-"<<y<<";";
@@ -403,8 +499,8 @@ void MoveSkeletW::selectPivot(int x, int y){
             min = (pow(vertices[i]->Disc->X - x, 2) + pow(vertices[i]->Disc->Y - y, 2));
         }
     }
-//    std::cout<<"RESULT "<<mini<<std::endl;
-    curNode = vertices[mini];
+//    std::cout<<"RESULT "<<mini<<std::endl;*/
+//    curNode = vertices[mini];
 }
 
 void MoveSkeletW::mousePressEvent(QMouseEvent *event)
@@ -424,30 +520,8 @@ void MoveSkeletW::mousePressEvent(QMouseEvent *event)
     setCursor(Qt::PointingHandCursor);//(Qt::DragMoveCursor);
 
     //delete skeleton;
-
-    QImage image = getImage();
-    BitRaster* srcimg = new BitRaster(image.width(), image.height());
-    bool inverted = false;//ui.invertCheckBox->checkState() == Qt::Checked;
-    for (int i = 0; i < image.height(); i++) {
-        for(int j = 0; j < image.width(); j++) {
-            bool isBlack = (qBlue(image.pixel(j, i)) < 128
-                            || qRed(image.pixel(j, i)) < 128
-                            || qGreen(image.pixel(j, i)) < 128);
-            if (!inverted) {
-                if (isBlack) {
-                    srcimg->setBit(j, i, isBlack);
-                }
-            }
-            else {
-                if (!isBlack) {
-                    srcimg->setBit(j, i, !isBlack);
-                }
-            }
-        }
-    }
-
-    BondSkeletTrans(srcimg, 1, 100, skeleton);
-    vertices.clear();
+    image = getImage();
+    renewSkelet();
     //skeleton = MyPainter(this, getImage()).skeleton;
 //    this->update();
   }
@@ -505,15 +579,7 @@ void MoveSkeletW::paintEvent(QPaintEvent *)
   //c
     painter.setPen(QPen(Qt::cyan, 8, Qt::SolidLine, Qt::RoundCap,
                         Qt::MiterJoin));
-    if (endPoint){
-        painter.drawPoint(endPoint->Disc->X, endPoint->Disc->Y);
-        painter.setPen(QPen(Qt::red, 8, Qt::SolidLine, Qt::RoundCap,
-                            Qt::MiterJoin));
-        painter.drawPoint(endPointst->Disc->X, endPointst->Disc->Y);
-        painter.setPen(QPen(Qt::magenta, 10, Qt::SolidLine, Qt::RoundCap,
-                            Qt::MiterJoin));
-        painter.drawPoint(tmpCorn->X, tmpCorn->Y);
-    }
+
     painter.setPen(QPen(Qt::green, 1, Qt::DotLine, Qt::RoundCap,
                         Qt::MiterJoin));
     painter.setBrush(QBrush(Qt::green, Qt::SolidPattern)); //Qt::TransparentMode Qt::SolidPattern Qt::NoBrush  Dense1Pattern
@@ -531,7 +597,11 @@ void MoveSkeletW::paintEvent(QPaintEvent *)
    }
    painter.drawPath(path);
 
-
+/*    if (tmpCorn){
+        painter.setPen(QPen(Qt::magenta, 10, Qt::SolidLine, Qt::RoundCap,
+                            Qt::MiterJoin));
+        painter.drawPoint(tmpCorn->X, tmpCorn->Y);
+    }*/
    // рисуем скелеты
    TConnected* Com = skeleton->Components->first();
    bool drawBones = 1;
@@ -572,6 +642,9 @@ void MoveSkeletW::paintEvent(QPaintEvent *)
    }
    painter.setPen(QPen(Qt::red, 8, Qt::SolidLine, Qt::RoundCap,
                        Qt::MiterJoin));
+   if (curNode){
+       painter.drawPoint(curNode->Disc->X, curNode->Disc->Y);
+   }
    for (int i = 0; i < vertices.size(); ++i){
        painter.drawPoint(vertices[i]->Disc->X, vertices[i]->Disc->Y);
        //painter.drawLine(vertices[i]->Disc->X, vertices[i]->Disc->Y, );
@@ -583,6 +656,14 @@ void MoveSkeletW::paintEvent(QPaintEvent *)
        //painter.drawLine(circPoint[i].X, circPoint[i].Y
    }
    //painter.end();
-
+   painter.setPen(QPen(Qt::magenta, 10, Qt::SolidLine, Qt::RoundCap,
+                       Qt::MiterJoin));
+   /*if (endPoint){
+       painter.drawPoint(endPoint->x(), endPoint->y());
+       painter.setPen(QPen(Qt::black, 8, Qt::SolidLine, Qt::RoundCap,
+                           Qt::MiterJoin));
+        painter.drawPoint(endPointst->x(), endPointst->y());
+        painter.drawPoint(tmpCorn->X, tmpCorn->Y);
+   }*/
 }
 

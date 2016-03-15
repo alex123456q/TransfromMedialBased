@@ -215,7 +215,7 @@ void PaintFig::paintEvent(QPaintEvent *)
         delete points;
     }
     if (!pressed){
-        painter.setBrush(Qt::blue);
+        painter.setBrush(Qt::green);
         painter.setPen(QPen(Qt::black, 1, Qt::SolidLine));
         painter.drawPath(path);
 
@@ -237,7 +237,7 @@ void PaintFig::paintEvent(QPaintEvent *)
         }
         path.addPolygon(pol);
         delete points;
-        painter.setBrush(Qt::blue);
+        painter.setBrush(Qt::green);
         painter.setPen(QPen(Qt::black, 1, Qt::SolidLine));
         painter.drawPath(path);
 

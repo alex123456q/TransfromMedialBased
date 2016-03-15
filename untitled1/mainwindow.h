@@ -3,9 +3,7 @@
 
 #include <QMainWindow>
 #include "TransformMedialBased.h"
-#include "SkeletonDemoGUI/MyPainter_.h"
 #include "PaintFig.h"
-#include "SelectPivots.h"
 #include "MyWidget.h"
 #include "MoveSkeletW.h"
 
@@ -22,8 +20,8 @@ public:
 //    explicit MainWindow(QWidget *parent = 0, const char *name = 0);
     ~MainWindow();
 private slots:
-    void SkeletButtonClicked();
-    void PivotsButtonClicked();
+    //void SkeletButtonClicked();
+    //void PivotsButtonClicked();
     void OkButtonClicked();
     void saveImageButtonClicked();
     void openImageButtonClicked();

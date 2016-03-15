@@ -13,7 +13,7 @@ class SelectPivots : public MyWidget//QWidget
     Q_OBJECT
 
 public:
-    SelectPivots(QWidget *parent, QImage, TPolFigure *);
+    SelectPivots(QWidget *parent, QImage);
     ~SelectPivots();
     std::vector<TNode*> getPivots();
 private:

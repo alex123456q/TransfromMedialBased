@@ -4,7 +4,7 @@
 #include <QMouseEvent>
 #include <QCursor>
 
-SelectPivots::SelectPivots(QWidget *parent, QImage im, TPolFigure *sk)
+SelectPivots::SelectPivots(QWidget *parent, QImage im)
     : MyWidget(parent)
 {
     setMinimumSize(500, 300);
@@ -12,7 +12,7 @@ SelectPivots::SelectPivots(QWidget *parent, QImage im, TPolFigure *sk)
     setCursor(Qt::CrossCursor);
     setVisible(false);
     image = im;
-    skeleton = sk;
+    //skeleton = sk;
 }
 
 SelectPivots::~SelectPivots()

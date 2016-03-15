@@ -19,7 +19,6 @@ MyPainter::MyPainter(QWidget *parent, QImage filepath)
 	drawCircles = false;
 	drawContours = true;
     drawImage = false;//true;
-    skeleton = NULL;
     srcimg = NULL;
 
 }

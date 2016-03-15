@@ -12,7 +12,7 @@ class MoveSkeletW : public MyWidget
     Q_OBJECT
 public:
     MoveSkeletW(QWidget *parent = 0);
-    MoveSkeletW(QWidget *, QImage, TPolFigure *, std::vector<TNode*>);
+    MoveSkeletW(QWidget *, QImage);
     ~MoveSkeletW();
 protected:
     void mouseMoveEvent(QMouseEvent*);
@@ -21,12 +21,13 @@ protected:
     void mousePressEvent(QMouseEvent *);
 
 private:
+    TPolFigure *skeleton;
     QPainterPath path;
     QImage image;
     bool point;
     int xPr, yPr;
     TNode* curNode;
-    TNode* endPoint;
+    TNode* endPoint;//TNode*
     TNode* endPointst;
     TPoint* start;
     TPoint* finish;
@@ -36,7 +37,8 @@ private:
     std::vector<TNode *> vertices;
     void selectPivot(int , int );
 
-    void Circles();
+    void renewSkelet();
+    void Circles(double x, double y);
     void dfs(TNode* curNode);
     void changeSkelet(TNode* curNode, double x, double y);
 };

@@ -23,8 +23,6 @@ SOURCES += main.cpp\
     SkeletonDemoGUI/SkeletonLib/TreeAVL.cpp \
     SkeletonDemoGUI/SkeletonLib/TriDel.cpp \
     PaintFig.cpp \
-    SkeletonDemoGUI/MyPainter_.cpp \
-    SelectPivots.cpp \
     SkeletProcess.cpp \
     MoveSkeletW.cpp
 
@@ -42,8 +40,6 @@ HEADERS  += mainwindow.h \
     SkeletonDemoGUI/SkeletonLib/TreeAVL.h \
     SkeletonDemoGUI/SkeletonLib/TriDel.h \
     PaintFig.h \
-    SkeletonDemoGUI/MyPainter_.h \
-    SelectPivots.h \
     MyWidget.h \
     SkeletProcess.h \
     MoveSkeletW.h
