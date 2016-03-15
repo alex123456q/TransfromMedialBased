@@ -4,8 +4,7 @@
 #include <QCursor>
 #include "SelectPivots.h"
 #include<cmath>
-
-
+#include "SkeletonDemoGUI/SkeletonLib/BSTrans.h"
 /*
  * Initialization
  */
@@ -154,6 +153,8 @@ void MoveSkeletW::dfs(TNode* curNode){
     if (curNode->Kind() == TailNode){
         endPoint = curNode;
         endPointst = curNode->Bones[0]->dest;
+        if (endPointst == endPoint)
+            endPointst = curNode->Bones[0]->org;
     }
     while (i < curNode->Kind()){
         Bone = curNode->Bones[i];
@@ -298,12 +299,14 @@ void MoveSkeletW::Circles(){
         }
         if (S->getNext() == NULL)
             break;
-        //S = S->getNext();
+        S = S->getNext();
     }
     start = Corn;
     finish = Corn;
     tmpCorn = Corn;
-    while (Classify(finish->getNextLooped(), finish, &circPoint[0]) != Between
+
+    //Codirect()
+     while (Classify(finish->getNextLooped(), finish, &circPoint[0]) != Between
            && Classify(finish->getNextLooped(), finish, &circPoint[0]) != Origin
            && Classify(finish->getNextLooped(), finish, &circPoint[1]) != Between
            && Classify(finish->getNextLooped(), finish, &circPoint[1]) != Origin){
@@ -318,18 +321,26 @@ void MoveSkeletW::Circles(){
            && Classify(start, start->getPrevLooped(), &circPoint[1]) != Origin){
         start = start->getPrevLooped();
     }
-   if (Classify(start, start->getPrevLooped(), &circPoint[0]) == Between ||
+    if (Classify(start, start->getPrevLooped(), &circPoint[0]) == Between ||
         Classify(start, start->getPrevLooped(), &circPoint[0]) == Origin){
        (new Point(circPoint[0]))->moveAsPrevFor(start);
        start = start->getPrev();
+ //   (new Point(curNode->Disc->X, curNode->Disc->Y))->moveAsPrevFor(start);
+       (new Point(circPoint[0]))->moveAsPrevFor(start);
        (new Point(circPoint[1]))->moveAsNextFor(finish);
        finish = finish->getNext();
+  //  (new Point(curNode->Disc->X, curNode->Disc->Y))->moveAsNextFor(finish);
+       (new Point(circPoint[1]))->moveAsNextFor(finish);
    } else {
        TPoint* newPoint = new Point(circPoint[1]);
        newPoint->moveAsPrevFor(start);
+  //(new Point(curNode->Disc->X, curNode->Disc->Y))->moveAsPrevFor(newPoint);
+       (new Point(circPoint[1]))->moveAsPrevFor(newPoint);
        start = newPoint;
        newPoint = new Point(circPoint[0]);
        newPoint->moveAsNextFor(finish);
+ // (new Point(curNode->Disc->X, curNode->Disc->Y))->moveAsNextFor(newPoint);
+       (new Point(circPoint[0]))->moveAsNextFor(newPoint);
        finish = newPoint;
    }
 }
@@ -362,7 +373,7 @@ void MoveSkeletW::mouseMoveEvent(QMouseEvent *event){
 //    std::cout << event->pos().x(),event->pos().y();
 
     TPoint* curPoint = start;
-    while (curPoint != finish){
+    while (curPoint != finish->getNextLooped()){
         rotEdge(rotMatr, curPoint);
         curPoint = curPoint->getNextLooped();
     }
@@ -411,6 +422,33 @@ void MoveSkeletW::mousePressEvent(QMouseEvent *event)
   else if (event->button() == Qt::RightButton){
     point = true;
     setCursor(Qt::PointingHandCursor);//(Qt::DragMoveCursor);
+
+    //delete skeleton;
+
+    QImage image = getImage();
+    BitRaster* srcimg = new BitRaster(image.width(), image.height());
+    bool inverted = false;//ui.invertCheckBox->checkState() == Qt::Checked;
+    for (int i = 0; i < image.height(); i++) {
+        for(int j = 0; j < image.width(); j++) {
+            bool isBlack = (qBlue(image.pixel(j, i)) < 128
+                            || qRed(image.pixel(j, i)) < 128
+                            || qGreen(image.pixel(j, i)) < 128);
+            if (!inverted) {
+                if (isBlack) {
+                    srcimg->setBit(j, i, isBlack);
+                }
+            }
+            else {
+                if (!isBlack) {
+                    srcimg->setBit(j, i, !isBlack);
+                }
+            }
+        }
+    }
+
+    BondSkeletTrans(srcimg, 1, 100, skeleton);
+    vertices.clear();
+    //skeleton = MyPainter(this, getImage()).skeleton;
 //    this->update();
   }
 }
@@ -424,7 +462,8 @@ void MoveSkeletW::paintEvent(QPaintEvent *)
 //    QImage mainImage(500, 300, 32);
 //    mainImage.fill(qRgb(255, 255, 255));
 //    painter.drawImage(0, 0, mainImage);
-
+    path = QPainterPath();
+    path.setFillRule(Qt::WindingFill);
     painter.fillRect(0, 0, image.width(), image.height(), Qt::white);
 
     painter.setRenderHint(QPainter::Antialiasing);
@@ -432,7 +471,7 @@ void MoveSkeletW::paintEvent(QPaintEvent *)
     if (skeleton == NULL) {
         return;
     }
-
+    QPolygonF contour;
         painter.setPen(QPen(Qt::blue, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 
         TContour* S = skeleton->Boundary->first();
@@ -448,68 +487,22 @@ void MoveSkeletW::paintEvent(QPaintEvent *)
                 Corn = Corn->getNext();
             }
             for (int j = 0; j < cornersCount - 1; j++) {
-                painter.drawLine(points[j]->X, points[j]->Y, points[j + 1]->X, points[j + 1]->Y);
-                painter.setPen(QPen(Qt::blue, 4.5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-                painter.drawPoint(points[j]->X, points[j]->Y); ///
-                painter.setPen(QPen(Qt::blue, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+                contour << QPointF(points[j]->X, points[j]->Y) << QPointF(points[j + 1]->X, points[j + 1]->Y);
+         //c       painter.drawLine(points[j]->X, points[j]->Y, points[j + 1]->X, points[j + 1]->Y);
+       //         painter.setPen(QPen(Qt::blue, 4.5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+      //          painter.drawPoint(points[j]->X, points[j]->Y); ///
+         //c       painter.setPen(QPen(Qt::blue, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 
             }
-            painter.drawLine(points[cornersCount - 1]->X, points[cornersCount - 1]->Y, points[0]->X, points[0]->Y);
+            contour << QPointF(points[cornersCount - 1]->X, points[cornersCount - 1]->Y) << QPointF(points[0]->X, points[0]->Y);
+
+        //c    painter.drawLine(points[cornersCount - 1]->X, points[cornersCount - 1]->Y, points[0]->X, points[0]->Y);
 
             delete points;
             S = S->getNext();
         }
-
-    // рисуем скелеты
-    TConnected* Com = skeleton->Components->first();
-    bool drawBones = 1;
-    bool drawCircles = 0;
-    while (Com != NULL) {
-        painter.setPen(QPen(Qt::red, 1.5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-
-        if (drawBones) {
-            TBone* Bone = Com->Bones->first();
-            while (Bone != NULL) {
-                painter.drawLine(
-                    Bone->org->Disc->X,
-                    Bone->org->Disc->Y,
-                    Bone->dest->Disc->X,
-                    Bone->dest->Disc->Y
-                );
-
-                Bone = Bone->getNext();
-            }
-        }
-
-        painter.setPen(QPen(Qt::green, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-
-        if (drawCircles) {
-            TNode* Node = Com->Nodes->first();
-
-            while (Node != NULL) {
-                painter.drawEllipse(Node->X() + 1 - Node->r(),
-                    Node->Y() + 1 - Node->r(),
-                    2 * Node->r(),
-                    2 * Node->r());
-
-                Node = Node->getNext();
-            }
-        }
-
-        Com = Com->getNext();
-    }
-    painter.setPen(QPen(Qt::red, 8, Qt::SolidLine, Qt::RoundCap,
-                        Qt::MiterJoin));
-    for (int i = 0; i < vertices.size(); ++i){
-        painter.drawPoint(vertices[i]->Disc->X, vertices[i]->Disc->Y);
-        //painter.drawLine(vertices[i]->Disc->X, vertices[i]->Disc->Y, );
-    }
-    painter.setPen(QPen(Qt::black, 8, Qt::SolidLine, Qt::RoundCap,
-                        Qt::MiterJoin));
-    for (int i = 0; i < circPoint.size(); ++i){
-        painter.drawPoint(circPoint[i].X, circPoint[i].Y);
-        //painter.drawLine(circPoint[i].X, circPoint[i].Y
-    }
+    path.addPolygon(contour);
+  //c
     painter.setPen(QPen(Qt::cyan, 8, Qt::SolidLine, Qt::RoundCap,
                         Qt::MiterJoin));
     if (endPoint){
@@ -523,14 +516,73 @@ void MoveSkeletW::paintEvent(QPaintEvent *)
     }
     painter.setPen(QPen(Qt::green, 1, Qt::DotLine, Qt::RoundCap,
                         Qt::MiterJoin));
-    painter.setBrush(QBrush(Qt::blue, Qt::Dense1Pattern)); //Qt::TransparentMode Qt::SolidPattern Qt::NoBrush
+    painter.setBrush(QBrush(Qt::green, Qt::SolidPattern)); //Qt::TransparentMode Qt::SolidPattern Qt::NoBrush  Dense1Pattern
     if (!curRot.empty()){
-        painter.drawEllipse(QPointF(curRot[0]->Disc->X,
-                            curRot[0]->Disc->Y),
-                curRot[0]->Disc->Rad, curRot[0]->Disc->Rad);
+ //c
+        path.addEllipse(QPointF(curRot[0]->Disc->X,
+                                curRot[0]->Disc->Y),
+                                curRot[0]->Disc->Rad, curRot[0]->Disc->Rad);
+ //       painter.drawEllipse(QPointF(curRot[0]->Disc->X,
+ //                           curRot[0]->Disc->Y),
+ //               curRot[0]->Disc->Rad, curRot[0]->Disc->Rad);
         /*painter.drawEllipse(QPointF(curRot[1]->Disc->X,
                             curRot[1]->Disc->Y),
                 curRot[1]->Disc->Rad, curRot[1]->Disc->Rad);*/
-    }
+   }
+   painter.drawPath(path);
+
+
+   // рисуем скелеты
+   TConnected* Com = skeleton->Components->first();
+   bool drawBones = 1;
+   bool drawCircles = 0;
+   while (Com != NULL) {
+       painter.setPen(QPen(Qt::red, 1.5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+
+       if (drawBones) {
+           TBone* Bone = Com->Bones->first();
+           while (Bone != NULL) {
+               painter.drawLine(
+                   Bone->org->Disc->X,
+                   Bone->org->Disc->Y,
+                   Bone->dest->Disc->X,
+                   Bone->dest->Disc->Y
+               );
+
+               Bone = Bone->getNext();
+           }
+       }
+
+       painter.setPen(QPen(Qt::green, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+
+       if (drawCircles) {
+           TNode* Node = Com->Nodes->first();
+
+           while (Node != NULL) {
+               painter.drawEllipse(Node->X() + 1 - Node->r(),
+                   Node->Y() + 1 - Node->r(),
+                   2 * Node->r(),
+                   2 * Node->r());
+
+               Node = Node->getNext();
+           }
+       }
+
+       Com = Com->getNext();
+   }
+   painter.setPen(QPen(Qt::red, 8, Qt::SolidLine, Qt::RoundCap,
+                       Qt::MiterJoin));
+   for (int i = 0; i < vertices.size(); ++i){
+       painter.drawPoint(vertices[i]->Disc->X, vertices[i]->Disc->Y);
+       //painter.drawLine(vertices[i]->Disc->X, vertices[i]->Disc->Y, );
+   }
+   painter.setPen(QPen(Qt::black, 8, Qt::SolidLine, Qt::RoundCap,
+                       Qt::MiterJoin));
+   for (int i = 0; i < circPoint.size(); ++i){
+       painter.drawPoint(circPoint[i].X, circPoint[i].Y);
+       //painter.drawLine(circPoint[i].X, circPoint[i].Y
+   }
+   //painter.end();
+
 }
 

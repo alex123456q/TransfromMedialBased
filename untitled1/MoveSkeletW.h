@@ -21,6 +21,7 @@ protected:
     void mousePressEvent(QMouseEvent *);
 
 private:
+    QPainterPath path;
     QImage image;
     bool point;
     int xPr, yPr;

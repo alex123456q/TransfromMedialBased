@@ -79,7 +79,7 @@ void SelectPivots::setVertex(const QPoint &pos, bool cond){
 //        }
         TConnected* Com = skeleton->Components->first();
         TBone *minBone = NULL;
-        double min = 10000000;
+        double min = 10000000000;
         double tmp0;
         while (Com != NULL) {
             TBone* Bone = Com->Bones->first();

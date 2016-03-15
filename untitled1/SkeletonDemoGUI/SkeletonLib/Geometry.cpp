@@ -26,7 +26,7 @@ PlanePosition Classify(Point *P1, Point *P2, Point *q)
             if (C < -0.0000001)
 				result = Behind;
 			else
-                if (C == 0)
+                if (fabs(C) < 0.0000001)
 					result = Origin;
 				else
 				{
